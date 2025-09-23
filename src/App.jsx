@@ -1,3 +1,29 @@
+import React from "react";
+import { Routes, Route } from "react-router-dom";
+import Home from "./pages/Home";
+import ProductDetail from "./pages/ProductDetail";
+import CartPage from "./pages/CartPage";
+import Checkout from "./pages/Checkout";
+import OrderConfirmation from "./pages/OrderConfirmation";
+import Header from "./components/Header";
+
+export default function App() {
+  return (
+    <div className="min-h-screen bg-gray-50">
+      <Header />
+      <main className="max-w-6xl mx-auto p-4">
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/product/:id" element={<ProductDetail />} />
+          <Route path="/cart" element={<CartPage />} />
+          <Route path="/checkout" element={<Checkout />} />
+          <Route path="/order/:orderId" element={<OrderConfirmation />} />
+        </Routes>
+      </main>
+    </div>
+  );
+}
+
 import { useState } from 'react'
 import reactLogo from './assets/react.svg'
 import viteLogo from '/vite.svg'
