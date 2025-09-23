@@ -23,6 +23,12 @@ function router(){
   else if(path === 'cart') renderCart();
   else if(path === 'checkout') renderCheckout();
   else if(path === 'confirmation') renderConfirmation();
+  else if(path === 'women') renderCollection({ gender: 'women', title: "Women's Collection" });
+  else if(path === 'men') renderCollection({ gender: 'men', title: "Men's Collection" });
+  else if(path === 'new') renderCollection({ isNew: true, title: 'New Arrivals' });
+  else if(path === 'clearance') renderCollection({ clearance: true, title: 'Clearance' });
+  else if(path === 'about') renderAbout();
+  else if(path === 'login') renderLogin();
   else renderHome();
 }
 
@@ -32,15 +38,22 @@ function renderHome(){
   $app.innerHTML = `
     <section class="hero" aria-labelledby="main-title">
       <h1 id="main-title">Mogox — Modern clothing</h1>
-      <p>Quality pieces for everyday wear. Search, view details, add to cart and checkout (simulation).</p>
-      <div style="margin-top:12px;">
+      <p>Quality pieces for everyday wear. Search, filter, add to cart and checkout.</p>
+      <div class="filters">
+        <button class="pill" data-filter="all" aria-pressed="true">All</button>
+        <button class="pill" data-filter="women">Women</button>
+        <button class="pill" data-filter="men">Men</button>
+        <button class="pill" data-filter="new">New</button>
+        <button class="pill" data-filter="accessories">Accessories</button>
+      </div>
+      <div style="margin-top:12px;max-width:520px;margin-left:auto;margin-right:auto;">
         <input id="search" class="input" type="search" placeholder="Search products..." aria-label="Search products" />
       </div>
     </section>
 
     <section>
-      <h2>Featured products</h2>
-      <div id="grid" class="grid" role="list" aria-live="polite"></div>
+      <h2 style="text-align:center">Featured products</h2>
+      <div class="catalogue"><div id="grid" class="grid" role="list" aria-live="polite"></div></div>
     </section>
   `;
 
@@ -51,24 +64,33 @@ function renderHome(){
     list.forEach(p => {
       const el = document.createElement('article');
       el.className = 'card';
+      const altImage = p.images[1] || p.images[0];
       el.innerHTML = `
-        <img src="${p.images[0]}" alt="${p.title}" loading="lazy" />
+        <div class="card-media">
+          <img class="primary" src="${p.images[0]}" alt="${p.title}" loading="lazy" />
+          <img class="alt" src="${altImage}" alt="${p.title} alternate" loading="lazy" />
+          <div class="card-overlay">
+            <div class="row" style="gap:8px">
+              <a class="btn btn-ghost" href="#/product/${p.id}">Quick View</a>
+              <button class="btn btn-primary" data-add="${p.id}">Add to Cart</button>
+            </div>
+          </div>
+        </div>
         <div class="card-body">
           <div style="display:flex;justify-content:space-between;align-items:center">
             <h3 style="margin:0;font-size:1rem">${p.title}</h3>
-            <div class="price">${formatCurrency(p.price)}</div>
+            <div class="price">${formatCurrency(p.price)}${p.compareAt ? `<span class=\"compare\">${formatCurrency(p.compareAt)}</span>` : ''}</div>
           </div>
-          <div class="row" style="margin-top:6px">
-            <a class="btn btn-ghost" href="#/product/${p.id}">View</a>
-            <button class="btn btn-primary" data-add="${p.id}">Add</button>
-          </div>
+          ${p.clearance ? (()=>{ const pct = p.compareAt ? Math.max(1, Math.round(100 - (p.price/p.compareAt*100))) : 0; return `<div class=\"badge badge-clearance\" aria-label=\"Clearance\">Clearance • ${pct}% off</div>`; })() : ''}
         </div>
       `;
       $grid.appendChild(el);
     });
   }
 
-  show(PRODUCTS);
+  let activeFilter = 'all';
+  let list = PRODUCTS.slice();
+  show(list);
 
   $grid.addEventListener('click', (e)=>{
     const id = e.target.closest('[data-add]')?.getAttribute('data-add');
@@ -83,10 +105,30 @@ function renderHome(){
 
   $search.addEventListener('input', (e)=> {
     const q = e.target.value.trim().toLowerCase();
-    show(PRODUCTS.filter(p => p.title.toLowerCase().includes(q)));
+    const base = filterList(PRODUCTS, activeFilter);
+    show(base.filter(p => p.title.toLowerCase().includes(q)));
+  });
+  // filter buttons
+  document.querySelectorAll('.pill').forEach(btn => {
+    btn.addEventListener('click', ()=>{
+      document.querySelectorAll('.pill').forEach(b=> b.setAttribute('aria-pressed','false'));
+      btn.setAttribute('aria-pressed','true');
+      activeFilter = btn.getAttribute('data-filter');
+      const q = $search.value.trim().toLowerCase();
+      const base = filterList(PRODUCTS, activeFilter);
+      show(q ? base.filter(p=> p.title.toLowerCase().includes(q)) : base);
+    });
   });
   updateCartCount();
   $app.focus();
+}
+
+function filterList(products, filter){
+  if(filter === 'women') return products.filter(p => p.gender === 'women');
+  if(filter === 'men') return products.filter(p => p.gender === 'men');
+  if(filter === 'new') return products.filter(p => p.isNew);
+  if(filter === 'accessories') return products.filter(p => p.category === 'accessories');
+  return products;
 }
 
 // ---------- RENDER: PRODUCT ----------
@@ -272,6 +314,143 @@ function renderCheckout(){
   $app.focus();
 }
 
+// ---------- RENDER: COLLECTION ROUTES ----------
+function renderCollection({ gender, isNew, title }){
+  document.title = title + ' — Mogox';
+  const filtered = PRODUCTS.filter(p =>
+    (gender ? p.gender === gender : true) &&
+    (isNew ? p.isNew : true) &&
+    (title === 'Clearance' ? p.clearance : true)
+  );
+  $app.innerHTML = `
+    <section class="hero" aria-labelledby="col-title">
+      <h1 id="col-title">${title}</h1>
+      <p>${filtered.length} items</p>
+      ${title === 'Clearance' ? `<div class="muted" style="max-width:700px;margin:6px auto 0">Clearance means final markdowns — last sizes, limited quantities, and the best prices before items leave our catalogue. Once they're gone, they're gone.</div>` : ''}
+    </section>
+    <section>
+      <h2 style="text-align:center">Browse</h2>
+      <div class="catalogue"><div id="grid" class="grid" role="list" aria-live="polite"></div></div>
+    </section>
+  `;
+  const $grid = document.getElementById('grid');
+  $grid.innerHTML = filtered.map(p => {
+    const altImage = p.images[1] || p.images[0];
+    return `
+    <article class="card">
+      <div class="card-media">
+        <img class="primary" src="${p.images[0]}" alt="${p.title}" loading="lazy" />
+        <img class="alt" src="${altImage}" alt="${p.title} alternate" loading="lazy" />
+        <div class="card-overlay">
+          <div class="row" style="gap:8px">
+            <a class="btn btn-ghost" href="#/product/${p.id}">Quick View</a>
+            <button class="btn btn-primary" data-add="${p.id}">Add to Cart</button>
+          </div>
+        </div>
+      </div>
+      <div class="card-body">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <h3 style="margin:0;font-size:1rem">${p.title}</h3>
+          <div class="price">${formatCurrency(p.price)}${p.compareAt ? `<span class=\"compare\">${formatCurrency(p.compareAt)}</span>` : ''}</div>
+        </div>
+        ${p.clearance ? (()=>{ const pct = p.compareAt ? Math.max(1, Math.round(100 - (p.price/p.compareAt*100))) : 0; return `<div class=\"badge badge-clearance\" aria-label=\"Clearance\">Clearance • ${pct}% off</div>`; })() : ''}
+      </div>
+    </article>`;
+  }).join('');
+  $grid.addEventListener('click', (e)=>{
+    const id = e.target.closest('[data-add]')?.getAttribute('data-add');
+    if(id){
+      const prod = PRODUCTS.find(p => p.id === id);
+      STORE.addToCart({ productId: prod.id, title: prod.title, price: prod.price, size: prod.sizes[0] || 'One size', qty: 1, image: prod.images[0] });
+      updateCartCount();
+      alert('Added to cart: ' + prod.title);
+    }
+  });
+  updateCartCount();
+  $app.focus();
+}
+
+function renderAbout(){
+  document.title = 'About — Mogox';
+  $app.innerHTML = `
+    <section class="hero" aria-labelledby="about-title">
+      <h1 id="about-title">About Mogox</h1>
+      <p>Born from a love of design and comfort. We craft pieces that last.</p>
+    </section>
+    <div style="max-width:760px;margin:0 auto;text-align:center;background:#fff;padding:20px;border-radius:12px;box-shadow:0 8px 20px rgba(0,0,0,0.05)">
+      <h2 style="margin-top:0">Our Mission</h2>
+      <p>Make elevated essentials accessible — responsibly made, beautifully designed, and joyful to wear.</p>
+      <h3>Our Values</h3>
+      <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px">
+        <div class="card" style="padding:12px"><strong>Quality</strong><p class="muted">Thoughtful materials and long-lasting construction.</p></div>
+        <div class="card" style="padding:12px"><strong>Comfort</strong><p class="muted">Everyday pieces that move with you.</p></div>
+        <div class="card" style="padding:12px"><strong>Sustainability</strong><p class="muted">Lower impact choices across our supply chain.</p></div>
+      </div>
+      <h3 style="margin-top:16px">Timeline</h3>
+      <ul style="list-style:none;padding:0;margin:0;text-align:left">
+        <li>2023 — Mogox concept sketched in Berlin.
+        <li>2024 — First capsule collection launches online.
+        <li>2025 — Community-powered design feedback program.
+      </ul>
+      <div style="height:12px"></div>
+      <h3>Contact & Location</h3>
+      <p style="margin:8px 0">Preferred location: <strong>Berlin, Germany</strong></p>
+      <p style="margin:8px 0">Phone: <a href="tel:+493012345678" aria-label="Call Mogox Berlin">+49 30 1234 5678</a></p>
+      <p style="margin:8px 0">Email: <a href="mailto:hello@mogox.store">hello@mogox.store</a></p>
+      <div style="height:12px"></div>
+      <div style="border-radius:12px;overflow:hidden">
+        <iframe title="Mogox Berlin Location" width="100%" height="320" style="border:0" loading="lazy" referrerpolicy="no-referrer-when-downgrade" src="https://www.google.com/maps?q=Berlin%20Germany&output=embed"></iframe>
+      </div>
+    </div>
+  `;
+  $app.focus();
+}
+
+// ---------- RENDER: LOGIN ----------
+function renderLogin(){
+  document.title = 'Login — Mogox';
+  const user = localStorage.getItem('mogox_user');
+  if(user){
+    $app.innerHTML = `
+      <section class="hero"><h1>Welcome back</h1><p>You are signed in.</p></section>
+      <div style="text-align:center">
+        <button id="logout" class="btn btn-ghost">Logout</button>
+      </div>`;
+    document.getElementById('logout').addEventListener('click', ()=>{
+      localStorage.removeItem('mogox_user');
+      document.getElementById('nav-auth').textContent = 'Login';
+      renderLogin();
+    });
+    $app.focus();
+    return;
+  }
+  $app.innerHTML = `
+    <section class="hero" aria-labelledby="login-title">
+      <h1 id="login-title">Login</h1>
+      <p>Access your wishlist and faster checkout.</p>
+    </section>
+    <form id="login-form" style="max-width:420px;margin:0 auto;background:#fff;padding:16px;border-radius:12px;box-shadow:0 8px 20px rgba(0,0,0,0.05)">
+      <label>Email</label>
+      <input class="input" id="login-email" type="email" required />
+      <label style="margin-top:8px">Password</label>
+      <input class="input" id="login-pass" type="password" required />
+      <div style="margin-top:12px;text-align:center">
+        <button class="btn btn-primary" type="submit">Sign in</button>
+      </div>
+    </form>
+  `;
+  document.getElementById('login-form').addEventListener('submit', (e)=>{
+    e.preventDefault();
+    const email = document.getElementById('login-email').value.trim();
+    if(email){
+      localStorage.setItem('mogox_user', JSON.stringify({ email }));
+      document.getElementById('nav-auth').textContent = 'Account';
+      location.hash = '#/';
+    }
+  });
+  $app.focus();
+}
+
 // ---------- RENDER: CONFIRMATION ----------
 function renderConfirmation(){
   const order = JSON.parse(sessionStorage.getItem('lastOrder') || 'null');
@@ -294,4 +473,40 @@ window.addEventListener('hashchange', router);
 window.addEventListener('load', ()=>{
   updateCartCount();
   router();
+  // custom cursor behavior
+  const cursor = document.getElementById('cursor');
+  if(cursor){
+    let raf = null;
+    let targetX = 0, targetY = 0;
+    let x = 0, y = 0;
+    function loop(){
+      x += (targetX - x) * 0.2;
+      y += (targetY - y) * 0.2;
+      cursor.style.left = x + 'px';
+      cursor.style.top = y + 'px';
+      raf = requestAnimationFrame(loop);
+    }
+    window.addEventListener('mousemove', (e)=>{
+      targetX = e.clientX; targetY = e.clientY; cursor.classList.add('show');
+      if(!raf) raf = requestAnimationFrame(loop);
+    });
+    window.addEventListener('mousedown', ()=> cursor.classList.add('active'));
+    window.addEventListener('mouseup', ()=> cursor.classList.remove('active'));
+    window.addEventListener('blur', ()=> cursor.classList.remove('show'));
+  }
+  // footer newsletter
+  const newsletter = document.getElementById('newsletter');
+  if(newsletter){
+    newsletter.addEventListener('submit', (e)=>{
+      e.preventDefault();
+      alert('Thanks for subscribing!');
+      e.target.reset();
+    });
+  }
+  // nav auth text
+  const user = localStorage.getItem('mogox_user');
+  if(user){
+    const auth = document.getElementById('nav-auth');
+    if(auth) auth.textContent = 'Account';
+  }
 });
