@@ -1,0 +1,9 @@
+[build]
+  publish = "."
+  command = ""
+
+# For single-page apps, redirect all routes to index.html
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
