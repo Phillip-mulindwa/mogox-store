@@ -22,8 +22,14 @@ Features
 - Responsive layout and keyboard navigation
 - Images with descriptive alt text
 
+Cloudinary (images/videos)
+- Set your cloud name in index.html via:
+  <script>window.MOGOX_CLOUDINARY_CLOUD = 'YOUR_CLOUD_NAME';</script>
+- All product images will be fetched via Cloudinary with automatic format/quality and size transforms.
+- Optional videos: add a `videos` array (https/remote URLs) to any product in scripts/products.js; product page will render video thumbnails and play inline on click using Cloudinary video fetch.
+
 Tests
-This minimalist stack keeps tests focused on cart storage logic. You can run tests in-browser by opening tests/index.html once added, or migrate to a framework (e.g., Vitest) if upgrading to Option B.
+This minimalist stack keeps tests focused on cart storage logic. You can run tests in-browser by opening tests/index.html, or migrate to a framework (e.g., Vitest) if upgrading to Option B.
 
 Deployment
 - Netlify: repo root includes netlify.toml. Drag-and-drop or connect repo.
@@ -32,7 +38,7 @@ Deployment
 Design decisions
 - Hash-based routing for simplicity
 - localStorage for cart persistence across reloads
-- Unsplash images chosen to match product names/types; alt text provided
+- Images proxied through Cloudinary for reliability, quality, and sizing
 
 Accessibility
 - Focus outlines for interactive elements
@@ -40,10 +46,11 @@ Accessibility
 - Keyboard support for dropdown and mini-cart closing via click-away
 
 Project Structure
-- index.html — layout and app mount
+- index.html — layout and app mount (Cloudinary config)
 - style.css — design system and components
-- scripts/app.js — router and views
+- scripts/app.js — router and views (with video + Cloudinary)
 - scripts/products.js — product data
 - scripts/storage.js — cart APIs
+- scripts/cloudinary.js — Cloudinary helpers
 - netlify.toml — deploy config
 

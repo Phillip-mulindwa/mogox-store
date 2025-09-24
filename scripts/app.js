@@ -1,6 +1,6 @@
 import { PRODUCTS } from './products.js';
-import { buildCardUrl, buildThumbUrl } from './cloudinary.js';
 import * as STORE from './storage.js';
+import { buildCardUrl, buildThumbUrl, buildVideoUrl } from './cloudinary.js';
 
 const $app = document.getElementById('app');
 const $navCart = document.getElementById('nav-cart');
@@ -35,8 +35,8 @@ function updateCartCount(){
 
 // ROUTING: simple hash router
 function router(){
-  const hash = location.hash || '#/';
-  const [_, path, id] = hash.split('/');
+  const hash = location.hash || '#/'
+  const [_, path, id] = hash.split('/')
   if(hash === '#/' || hash === '') renderHome();
   else if(path === 'product') renderProduct(id);
   else if(path === 'cart') renderCart();
@@ -73,19 +73,19 @@ function renderHome(){
     <section class="tiles">
       <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px">
         <a class="tile" href="#/women" aria-label="Shop Women">
-          <img src="https://images.unsplash.com/photo-1519741503755-06f3d4803bfc?w=1200&q=80&auto=format&fit=crop" alt="Women collection"/>
+          <img src="${buildCardUrl('https://images.unsplash.com/photo-1519741503755-06f3d4803bfc?w=1200&q=80&auto=format&fit=crop')}" alt="Women collection"/>
           <span>Women</span>
         </a>
         <a class="tile" href="#/men" aria-label="Shop Men">
-          <img src="https://images.unsplash.com/photo-1512436991641-6745cdb1723f?w=1200&q=80&auto=format&fit=crop" alt="Men collection"/>
+          <img src="${buildCardUrl('https://images.unsplash.com/photo-1512436991641-6745cdb1723f?w=1200&q=80&auto=format&fit=crop')}" alt="Men collection"/>
           <span>Men</span>
         </a>
         <a class="tile" href="#/new" aria-label="Shop New Arrivals">
-          <img src="https://images.unsplash.com/photo-1520975825333-72b288f3e8e0?w=1200&q=80&auto=format&fit=crop" alt="New arrivals"/>
+          <img src="${buildCardUrl('https://images.unsplash.com/photo-1520975825333-72b288f3e8e0?w=1200&q=80&auto=format&fit=crop')}" alt="New arrivals"/>
           <span>New</span>
         </a>
         <a class="tile" href="#/clearance" aria-label="Shop Clearance">
-          <img src="https://images.unsplash.com/photo-1544025162-d76694265947?w=1200&q=80&auto=format&fit=crop" alt="Clearance"/>
+          <img src="${buildCardUrl('https://images.unsplash.com/photo-1544025162-d76694265947?w=1200&q=80&auto=format&fit=crop')}" alt="Clearance"/>
           <span>Clearance</span>
         </a>
       </div>
@@ -186,17 +186,18 @@ function renderProduct(id){
   const product = PRODUCTS.find(p => p.id === id);
   if(!product){ location.hash = '#/'; return; }
   document.title = product.title + ' — Mogox';
-  // thumbnails + main image carousel (simple)
   const fallback = getFallbackFor(product);
   const gallery = Array.from(new Set([product.images[0], product.images[1], fallback].filter(Boolean)));
+  const videoUrls = Array.isArray(product.videos) ? product.videos : [];
   $app.innerHTML = `
     <div class="product-grid">
       <div>
         <div id="main-image" style="border-radius:10px;overflow:hidden">
           <img src="${buildCardUrl(product.images[0])}" alt="${product.title}" style="width:100%;height:420px;object-fit:cover" referrerpolicy="no-referrer" onerror="this.onerror=null;this.src='${fallback}'" />
         </div>
-        <div style="display:flex;gap:8px;margin-top:8px">
-          ${gallery.map((img, i)=> `<button class=\"thumb\" data-i=\"${i}\" style=\"border:1px solid #eee;padding:4px;border-radius:8px\"><img src=\"${buildThumbUrl(img)}\" alt=\"${product.title} thumb ${i+1}\" style=\"width:64px;height:64px;object-fit:cover;border-radius:6px\" referrerpolicy=\"no-referrer\" onerror=\"this.onerror=null;this.src='${fallback}'\"></button>`).join('')}
+        <div style="display:flex;gap:8px;margin-top:8px" id="thumbs">
+          ${gallery.map((img, i)=> `<button class="thumb" data-type="image" data-i="${i}" style="border:1px solid #eee;padding:4px;border-radius:8px"><img src="${buildThumbUrl(img)}" alt="${product.title} thumb ${i+1}" style="width:64px;height:64px;object-fit:cover;border-radius:6px" referrerpolicy="no-referrer" onerror="this.onerror=null;this.src='${fallback}'"></button>`).join('')}
+          ${videoUrls.map((v, i)=> `<button class="thumb" data-type="video" data-v="${i}" style="position:relative;border:1px solid #eee;padding:4px;border-radius:8px"><span style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;background:rgba(0,0,0,0.35);border-radius:6px">▶</span><img src="${buildThumbUrl(product.images[0] || fallback)}" alt="${product.title} video ${i+1}" style="width:64px;height:64px;object-fit:cover;border-radius:6px"></button>`).join('')}
         </div>
       </div>
 
@@ -223,14 +224,21 @@ function renderProduct(id){
     </div>
   `;
 
-  $app.querySelectorAll('.thumb').forEach(btn=>{
-    btn.addEventListener('click', ()=>{
+  // thumbs behavior (image/video)
+  const $thumbs = document.getElementById('thumbs');
+  $thumbs.addEventListener('click', (e)=>{
+    const btn = e.target.closest('.thumb');
+    if(!btn) return;
+    const type = btn.getAttribute('data-type');
+    const container = document.getElementById('main-image');
+    if(type === 'image'){
       const i = Number(btn.getAttribute('data-i'));
-      const imgEl = document.querySelector('#main-image img');
-      imgEl.src = gallery[i] || product.images[0] || fallback;
-      imgEl.alt = product.title + ' image ' + (i+1);
-      imgEl.focus();
-    });
+      container.innerHTML = `<img src="${buildCardUrl(gallery[i] || product.images[0] || fallback)}" alt="${product.title} image ${i+1}" style="width:100%;height:420px;object-fit:cover" referrerpolicy="no-referrer" onerror="this.onerror=null;this.src='${fallback}'" />`;
+    } else if(type === 'video'){
+      const vi = Number(btn.getAttribute('data-v'));
+      const src = buildVideoUrl(videoUrls[vi]);
+      container.innerHTML = `<video src="${src}" style="width:100%;height:420px;object-fit:cover;border-radius:6px" controls autoplay muted playsinline></video>`;
+    }
   });
 
   document.getElementById('add-cart').addEventListener('click', ()=>{
@@ -616,7 +624,7 @@ function renderMiniCart(items){
     <div id="mini-cart-content">
       ${list.map(it => `
         <div class="item">
-          <img src="${it.image}" alt="${it.title}" referrerpolicy="no-referrer" onerror="this.onerror=null;this.src='${GENERIC_FALLBACK}'" />
+          <img src="${it.image}" alt="${it.title}" />
           <div style="flex:1">
             <div style="display:flex;justify-content:space-between"><strong>${it.title}</strong><span>x${it.qty}</span></div>
             <div class="muted" style="font-size:0.9rem">${formatCurrency(it.price)} • ${it.size}</div>
