@@ -82,8 +82,8 @@ function renderHome(){
     list.forEach(p => {
       const el = document.createElement('article');
       el.className = 'card';
-      const altImage = p.images[1] || p.images[0];
       const fallback = getFallbackFor(p);
+      const altImage = (p.images[1] && p.images[1] !== p.images[0]) ? p.images[1] : fallback;
       el.innerHTML = `
         <div class="card-media">
           <img class="primary" src="${p.images[0]}" alt="${p.title}" loading="lazy" referrerpolicy="no-referrer" onerror="this.onerror=null;this.src='${fallback}'" />
@@ -157,6 +157,7 @@ function renderProduct(id){
   document.title = product.title + ' — Mogox';
   // thumbnails + main image carousel (simple)
   const fallback = getFallbackFor(product);
+  const gallery = Array.from(new Set([product.images[0], product.images[1], fallback].filter(Boolean)));
   $app.innerHTML = `
     <div class="product-grid">
       <div>
@@ -164,7 +165,7 @@ function renderProduct(id){
           <img src="${product.images[0]}" alt="${product.title}" style="width:100%;height:420px;object-fit:cover" referrerpolicy="no-referrer" onerror="this.onerror=null;this.src='${fallback}'" />
         </div>
         <div style="display:flex;gap:8px;margin-top:8px">
-          ${product.images.map((img, i)=> `<button class="thumb" data-i="${i}" style="border:1px solid #eee;padding:4px;border-radius:8px"><img src="${img}" alt="${product.title} thumb ${i+1}" style="width:64px;height:64px;object-fit:cover;border-radius:6px" referrerpolicy="no-referrer" onerror="this.onerror=null;this.src='${fallback}'"></button>`).join('')}
+          ${gallery.map((img, i)=> `<button class="thumb" data-i="${i}" style="border:1px solid #eee;padding:4px;border-radius:8px"><img src="${img}" alt="${product.title} thumb ${i+1}" style="width:64px;height:64px;object-fit:cover;border-radius:6px" referrerpolicy="no-referrer" onerror="this.onerror=null;this.src='${fallback}'"></button>`).join('')}
         </div>
       </div>
 
@@ -195,7 +196,7 @@ function renderProduct(id){
     btn.addEventListener('click', ()=>{
       const i = Number(btn.getAttribute('data-i'));
       const imgEl = document.querySelector('#main-image img');
-      imgEl.src = product.images[i];
+      imgEl.src = gallery[i] || product.images[0] || fallback;
       imgEl.alt = product.title + ' image ' + (i+1);
       imgEl.focus();
     });
@@ -355,8 +356,8 @@ function renderCollection({ gender, isNew, title }){
   `;
   const $grid = document.getElementById('grid');
   $grid.innerHTML = filtered.map(p => {
-    const altImage = p.images[1] || p.images[0];
     const fallback = getFallbackFor(p);
+    const altImage = (p.images[1] && p.images[1] !== p.images[0]) ? p.images[1] : fallback;
     return `
     <article class="card">
       <div class="card-media">

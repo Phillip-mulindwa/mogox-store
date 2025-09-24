@@ -31,7 +31,7 @@ body{
 .logo{width:44px;height:44px;display:inline-flex;align-items:center;justify-content:center;color:#fff;font-weight:700;border-radius:10px;box-shadow:0 6px 16px rgba(255,107,107,0.25)}
 .brand-text{font-family:'Playfair Display', serif;font-weight:700;font-size:1.2rem;letter-spacing:0.5px}
 
-.main-nav .nav-link{margin-left:14px;color:var(--muted);text-decoration:none;position:relative}
+.main-nav .nav-link{margin-left:14px;color:var(--muted);text-decoration:none;position:relative;font: inherit}
 .main-nav .nav-link:hover{color:var(--primary)}
 .main-nav .nav-link::after{content:'';position:absolute;left:0;bottom:-6px;width:0;height:2px;background:linear-gradient(90deg,var(--teal),var(--accent));transition:width .25s ease}
 .main-nav .nav-link:hover::after{width:100%}
