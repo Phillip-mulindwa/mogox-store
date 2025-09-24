@@ -1,0 +1,31 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Storage tests</title>
+  <style>body{font-family:system-ui;padding:20px} pre{background:#f7f7f7;padding:10px;border-radius:8px}</style>
+</head>
+<body>
+  <h1>Cart storage tests</h1>
+  <pre id="out"></pre>
+  <script type="module">
+    import * as STORE from '../scripts/storage.js';
+    const out = document.getElementById('out');
+    function log(m){ out.textContent += m + '\n'; }
+    STORE.clearCart();
+    log('✓ clearCart: ok');
+    STORE.addToCart({ productId: 't1', title: 'Tee', price: 10, size: 'M', qty: 1, image: '' });
+    let items = STORE.loadCart();
+    log('✓ addToCart: ' + JSON.stringify(items));
+    STORE.addToCart({ productId: 't1', title: 'Tee', price: 10, size: 'M', qty: 2, image: '' });
+    items = STORE.loadCart();
+    log('✓ merge qty: ' + items[0].qty);
+    STORE.updateQty('t1','M',5);
+    items = STORE.loadCart();
+    log('✓ updateQty to 5: ' + items[0].qty);
+    STORE.removeItem('t1','M');
+    items = STORE.loadCart();
+    log('✓ removeItem: length ' + items.length);
+  </script>
+</body>
+</html>

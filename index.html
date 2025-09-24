@@ -33,13 +33,25 @@
       </a>
       <nav class="main-nav" role="navigation" aria-label="Main navigation">
         <a href="#/" class="nav-link">Home</a>
-        <a href="#/women" class="nav-link">Women</a>
-        <a href="#/men" class="nav-link">Men</a>
-        <a href="#/new" class="nav-link">New</a>
-        <a href="#/clearance" class="nav-link">Clearance</a>
+        <div class="dropdown" data-dropdown>
+          <button class="nav-link dropdown-trigger" aria-haspopup="true" aria-expanded="false" aria-controls="menu-shop">Shop ▾</button>
+          <div class="dropdown-menu" id="menu-shop" role="menu">
+            <a role="menuitem" class="dropdown-item" href="#/women">Women</a>
+            <a role="menuitem" class="dropdown-item" href="#/men">Men</a>
+            <a role="menuitem" class="dropdown-item" href="#/new">New Arrivals</a>
+            <a role="menuitem" class="dropdown-item" href="#/clearance">Clearance</a>
+            <a role="menuitem" class="dropdown-item" href="#/about">About</a>
+          </div>
+        </div>
         <a href="#/about" class="nav-link">About</a>
         <a href="#/login" class="nav-link" id="nav-auth">Login</a>
-        <a href="#/cart" class="nav-link" id="nav-cart">Cart (0)</a>
+
+        <div class="cart-wrap" data-minicart>
+          <a href="#/cart" class="nav-link" id="nav-cart" aria-haspopup="true" aria-expanded="false" aria-controls="mini-cart">Cart (0)</a>
+          <div id="mini-cart" class="mini-cart" role="dialog" aria-label="Mini cart" aria-modal="false">
+            <div id="mini-cart-content"></div>
+          </div>
+        </div>
       </nav>
     </div>
   </header>

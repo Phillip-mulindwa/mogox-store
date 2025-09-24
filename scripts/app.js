@@ -3,6 +3,9 @@ import * as STORE from './storage.js';
 
 const $app = document.getElementById('app');
 const $navCart = document.getElementById('nav-cart');
+const $miniCart = document.getElementById('mini-cart');
+const $miniCartWrap = document.querySelector('[data-minicart]');
+const $dropdown = document.querySelector('[data-dropdown]');
 const YEAR = document.getElementById('year');
 YEAR.textContent = new Date().getFullYear();
 
@@ -12,6 +15,7 @@ function updateCartCount(){
   const items = STORE.loadCart();
   const count = items.reduce((s,i)=> s + i.qty, 0);
   $navCart.textContent = `Cart (${count})`;
+  renderMiniCart(items);
 }
 
 // ROUTING: simple hash router
@@ -473,6 +477,45 @@ window.addEventListener('hashchange', router);
 window.addEventListener('load', ()=>{
   updateCartCount();
   router();
+  // Dropdown (Shop)
+  if($dropdown){
+    const trigger = $dropdown.querySelector('.dropdown-trigger');
+    const menu = $dropdown.querySelector('.dropdown-menu');
+    function open(){ $dropdown.classList.add('open'); trigger.setAttribute('aria-expanded','true'); }
+    function close(){ $dropdown.classList.remove('open'); trigger.setAttribute('aria-expanded','false'); }
+    trigger.addEventListener('click', (e)=>{
+      e.preventDefault();
+      const expanded = trigger.getAttribute('aria-expanded') === 'true';
+      expanded ? close() : open();
+    });
+    trigger.addEventListener('keydown', (e)=>{
+      if(e.key === 'ArrowDown'){ e.preventDefault(); open(); menu.querySelector('.dropdown-item')?.focus(); }
+    });
+    menu.addEventListener('keydown', (e)=>{
+      if(e.key === 'Escape'){ close(); trigger.focus(); }
+    });
+    document.addEventListener('click', (e)=>{
+      if(!$dropdown.contains(e.target)) close();
+    });
+  }
+
+  // Mini cart
+  if($miniCartWrap){
+    function openMini(){ $miniCartWrap.classList.add('open'); $navCart.setAttribute('aria-expanded','true'); }
+    function closeMini(){ $miniCartWrap.classList.remove('open'); $navCart.setAttribute('aria-expanded','false'); }
+    $navCart.addEventListener('click', (e)=>{
+      // toggle mini cart without navigating away immediately
+      const href = $navCart.getAttribute('href');
+      if(href === '#/cart'){
+        e.preventDefault();
+        const isOpen = $miniCartWrap.classList.contains('open');
+        isOpen ? closeMini() : openMini();
+      }
+    });
+    document.addEventListener('click', (e)=>{
+      if(!$miniCartWrap.contains(e.target)) closeMini();
+    });
+  }
   // custom cursor behavior
   const cursor = document.getElementById('cursor');
   if(cursor){
@@ -510,3 +553,43 @@ window.addEventListener('load', ()=>{
     if(auth) auth.textContent = 'Account';
   }
 });
+
+// ---- Mini cart renderer ----
+function renderMiniCart(items){
+  if(!$miniCart) return;
+  const list = items && items.length ? items : STORE.loadCart();
+  if(list.length === 0){
+    $miniCart.innerHTML = '<div id="mini-cart-content"><p class="muted" style="margin:6px">Your cart is empty.</p></div>';
+    return;
+  }
+  const subtotal = list.reduce((s,i)=> s + i.price * i.qty, 0);
+  const html = `
+    <div id="mini-cart-content">
+      ${list.map(it => `
+        <div class="item">
+          <img src="${it.image}" alt="${it.title}" />
+          <div style="flex:1">
+            <div style="display:flex;justify-content:space-between"><strong>${it.title}</strong><span>x${it.qty}</span></div>
+            <div class="muted" style="font-size:0.9rem">${formatCurrency(it.price)} • ${it.size}</div>
+          </div>
+          <button class="btn btn-ghost" data-remove-mini="${it.productId}||${it.size}" aria-label="Remove ${it.title}">×</button>
+        </div>
+      `).join('')}
+      <div class="total"><span>Subtotal</span><span>${formatCurrency(subtotal)}</span></div>
+      <div class="actions">
+        <a class="btn btn-ghost" href="#/cart">View cart</a>
+        <a class="btn btn-primary" href="#/checkout">Checkout</a>
+      </div>
+    </div>`;
+  $miniCart.innerHTML = html;
+  $miniCart.querySelectorAll('[data-remove-mini]').forEach(btn => {
+    btn.addEventListener('click', ()=>{
+      const [pid, size] = btn.getAttribute('data-remove-mini').split('||');
+      STORE.removeItem(pid, size);
+      updateCartCount();
+    });
+  });
+}
+
+// Listen to cart changes from other tabs
+window.addEventListener('storage', ()=> updateCartCount());
