@@ -77,19 +77,19 @@ function renderHome(){
     <section class="tiles">
       <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px">
         <a class="tile" href="#/women" aria-label="Shop Women">
-          <img src="${buildCardUrl((RESOLVED_PRODUCTS.find(p=>p.gender==='women')||RESOLVED_PRODUCTS[0]).images[0])}" alt="Women collection"/>
+          <img src="https://images.unsplash.com/photo-1607748862156-7c548e7e98f4?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8d29tZW58ZW58MHx8MHx8fDA%3D" alt="Women collection"/>
           <span>Women</span>
         </a>
         <a class="tile" href="#/men" aria-label="Shop Men">
-          <img src="${buildCardUrl((RESOLVED_PRODUCTS.find(p=>p.gender==='men')||RESOLVED_PRODUCTS[0]).images[0])}" alt="Men collection"/>
+          <img src="https://images.unsplash.com/photo-1528977695568-bd5e5069eb61?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Nnx8bWVuJTIwZ3JvdXB8ZW58MHx8MHx8fDA%3D" alt="Men collection"/>
           <span>Men</span>
         </a>
         <a class="tile" href="#/new" aria-label="Shop New Arrivals">
-          <img src="${buildCardUrl((RESOLVED_PRODUCTS.find(p=>p.isNew) || RESOLVED_PRODUCTS[0]).images[0])}" alt="New arrivals"/>
+          <img src="https://plus.unsplash.com/premium_photo-1749886490036-d1d875b321f1?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NXx8bmV3JTIwY2xvdGhpbmclMjBzdG9yZSUyMGFycml2YWxzfGVufDB8fDB8fHww" alt="New arrivals"/>
           <span>New</span>
         </a>
         <a class="tile" href="#/clearance" aria-label="Shop Clearance">
-          <img src="${buildCardUrl((RESOLVED_PRODUCTS.find(p=>p.clearance) || RESOLVED_PRODUCTS[0]).images[0])}" alt="Clearance"/>
+          <img src="https://images.unsplash.com/photo-1561069934-eee225952461?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTZ8fGRpc2NvdW50ZWQlMjBjbG90aGVzfGVufDB8fDB8fHww" alt="Clearance"/>
           <span>Clearance</span>
         </a>
       </div>
