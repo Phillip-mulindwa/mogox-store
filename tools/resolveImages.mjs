@@ -28,11 +28,17 @@ const CATEGORY_HINTS = {
 
 const NEGATIVE_TERMS = ['food', 'pizza', 'burger', 'landscape', 'mountain', 'beach', 'car', 'computer', 'bitcoin', 'crypto', 'blockchain', 'money', 'coin'];
 
+// Stricter required terms for flagged products
 const REQUIRED_BY_ID = {
-  '10': ['sunglass'],
-  '5': ['shorts'],
-  '12': ['cargo'],
+  '2': ['denim','jacket'],
+  '16': ['running','leggings'],
+  '14': ['pleated','skirt'],
+  '13': ['ribbed','top'],
+  '20': ['sandals'],
   '19': ['linen','shirt'],
+  '10': ['sunglass'],
+  '12': ['cargo'],
+  '5': ['shorts'],
   '17': ['chelsea','boot']
 };
 
@@ -81,7 +87,7 @@ async function searchUnsplash(q){
   url.searchParams.set('query', q);
   url.searchParams.set('orientation', 'squarish');
   url.searchParams.set('content_filter', 'high');
-  url.searchParams.set('per_page', '15');
+  url.searchParams.set('per_page', '20');
   const res = await fetch(url.toString(), { headers: { Authorization: `Client-ID ${ACCESS_KEY}` }});
   if(!res.ok){
     const t = await res.text();
@@ -96,7 +102,7 @@ async function resolveForProduct(p, custom){
   const results = await searchUnsplash(q);
   const required = REQUIRED_BY_ID[p.id] || [];
   const filtered = results.filter(r => goodResult(r, required));
-  const pick = (filtered.length ? filtered : results).slice(0, 10);
+  const pick = (filtered.length ? filtered : results).slice(0, 12);
   const urls = pick.map(r => r.urls && (r.urls.raw || r.urls.full || r.urls.regular)).filter(Boolean);
   if(urls.length === 0){
     return null;
