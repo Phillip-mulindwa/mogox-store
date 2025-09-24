@@ -9,6 +9,7 @@ const ROOT = process.cwd();
 const PRODUCTS_FILE = path.join(ROOT, 'scripts', 'products.js');
 const OUT_DIR = path.join(ROOT, 'data');
 const OUT_FILE = path.join(OUT_DIR, 'images.json');
+const QUERIES_FILE = path.join(OUT_DIR, 'queries.json');
 const ACCESS_KEY = process.env.UNSPLASH_ACCESS_KEY || process.env.UNSPLASH_KEY || '';
 
 if(!ACCESS_KEY){
@@ -37,7 +38,17 @@ async function loadProducts(){
   return products;
 }
 
-function buildQuery(p){
+async function loadCustomQueries(){
+  try {
+    const raw = await fs.readFile(QUERIES_FILE, 'utf8');
+    return JSON.parse(raw);
+  } catch {
+    return {};
+  }
+}
+
+function buildQuery(p, custom){
+  if(custom && custom[p.id]) return custom[p.id];
   const hints = CATEGORY_HINTS[p.category] || [];
   const gender = p.gender && p.gender !== 'unisex' ? p.gender : '';
   const terms = [p.title, ...hints, gender, 'apparel', 'studio', 'product'].filter(Boolean);
@@ -67,8 +78,8 @@ async function searchUnsplash(q){
   return data.results || [];
 }
 
-async function resolveForProduct(p){
-  const q = buildQuery(p);
+async function resolveForProduct(p, custom){
+  const q = buildQuery(p, custom);
   const results = await searchUnsplash(q);
   const filtered = results.filter(goodResult);
   const pick = (filtered.length ? filtered : results).slice(0, 4);
@@ -85,11 +96,12 @@ async function resolveForProduct(p){
 
 async function main(){
   const products = await loadProducts();
+  const custom = await loadCustomQueries();
   const out = {};
   let okCount = 0;
   for(const p of products){
     try {
-      const imgs = await resolveForProduct(p);
+      const imgs = await resolveForProduct(p, custom);
       if(imgs && imgs.length){
         out[p.id] = imgs;
         okCount++;

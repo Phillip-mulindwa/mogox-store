@@ -77,19 +77,19 @@ function renderHome(){
     <section class="tiles">
       <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px">
         <a class="tile" href="#/women" aria-label="Shop Women">
-          <img src="${buildCardUrl('https://images.unsplash.com/photo-1519741503755-06f3d4803bfc?w=1200&q=80&auto=format&fit=crop')}" alt="Women collection"/>
+          <img src="${buildCardUrl((RESOLVED_PRODUCTS.find(p=>p.gender==='women')||RESOLVED_PRODUCTS[0]).images[0])}" alt="Women collection"/>
           <span>Women</span>
         </a>
         <a class="tile" href="#/men" aria-label="Shop Men">
-          <img src="${buildCardUrl('https://images.unsplash.com/photo-1512436991641-6745cdb1723f?w=1200&q=80&auto=format&fit=crop')}" alt="Men collection"/>
+          <img src="${buildCardUrl((RESOLVED_PRODUCTS.find(p=>p.gender==='men')||RESOLVED_PRODUCTS[0]).images[0])}" alt="Men collection"/>
           <span>Men</span>
         </a>
         <a class="tile" href="#/new" aria-label="Shop New Arrivals">
-          <img src="${buildCardUrl('https://images.unsplash.com/photo-1520975825333-72b288f3e8e0?w=1200&q=80&auto=format&fit=crop')}" alt="New arrivals"/>
+          <img src="${buildCardUrl((RESOLVED_PRODUCTS.find(p=>p.isNew) || RESOLVED_PRODUCTS[0]).images[0])}" alt="New arrivals"/>
           <span>New</span>
         </a>
         <a class="tile" href="#/clearance" aria-label="Shop Clearance">
-          <img src="${buildCardUrl('https://images.unsplash.com/photo-1544025162-d76694265947?w=1200&q=80&auto=format&fit=crop')}" alt="Clearance"/>
+          <img src="${buildCardUrl((RESOLVED_PRODUCTS.find(p=>p.clearance) || RESOLVED_PRODUCTS[0]).images[0])}" alt="Clearance"/>
           <span>Clearance</span>
         </a>
       </div>
