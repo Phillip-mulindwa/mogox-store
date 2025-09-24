@@ -5,9 +5,12 @@
   "description": "Mogox clothing store — Option A (HTML/CSS/JS) demo",
   "scripts": {
     "start": "http-server -c-1 -p 5173 .",
-    "serve": "http-server -c-1 -p 5173 ."
+    "serve": "http-server -c-1 -p 5173 .",
+    "images:resolve": "UNSPLASH_ACCESS_KEY=$UNSPLASH_ACCESS_KEY node tools/resolveImages.mjs"
   },
   "devDependencies": {
-    "http-server": "^14.1.1"
+    "http-server": "^14.1.1",
+    "json5": "^2.2.3",
+    "node-fetch": "^3.3.2"
   }
 }

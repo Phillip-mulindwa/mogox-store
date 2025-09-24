@@ -1,4 +1,5 @@
 import { PRODUCTS } from './products.js';
+import { getProductsWithResolvedImages } from './apply-images.js';
 import * as STORE from './storage.js';
 import { buildCardUrl, buildThumbUrl, buildVideoUrl } from './cloudinary.js';
 
@@ -141,6 +142,13 @@ function renderHome(){
   let activeFilter = 'all';
   let list = PRODUCTS.slice();
   show(list);
+  // apply async resolved images (Unsplash via data/images.json)
+  getProductsWithResolvedImages().then(resolved => {
+    list = resolved.slice();
+    const base = filterList(list, activeFilter);
+    const q = $search.value.trim().toLowerCase();
+    show(q ? base.filter(p => p.title.toLowerCase().includes(q)) : base);
+  });
 
   $grid.addEventListener('click', (e)=>{
     const id = e.target.closest('[data-add]')?.getAttribute('data-add');
@@ -183,7 +191,9 @@ function filterList(products, filter){
 
 // ---------- RENDER: PRODUCT ----------
 function renderProduct(id){
-  const product = PRODUCTS.find(p => p.id === id);
+  const baseProduct = PRODUCTS.find(p => p.id === id);
+  if(!baseProduct){ location.hash = '#/'; return; }
+  const product = baseProduct;
   if(!product){ location.hash = '#/'; return; }
   document.title = product.title + ' — Mogox';
   const fallback = getFallbackFor(product);
