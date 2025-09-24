@@ -69,6 +69,36 @@ function renderHome(){
       </div>
     </section>
 
+    <section class="tiles">
+      <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px">
+        <a class="tile" href="#/women" aria-label="Shop Women">
+          <img src="https://images.unsplash.com/photo-1519741503755-06f3d4803bfc?w=1200&q=80&auto=format&fit=crop" alt="Women collection"/>
+          <span>Women</span>
+        </a>
+        <a class="tile" href="#/men" aria-label="Shop Men">
+          <img src="https://images.unsplash.com/photo-1512436991641-6745cdb1723f?w=1200&q=80&auto=format&fit=crop" alt="Men collection"/>
+          <span>Men</span>
+        </a>
+        <a class="tile" href="#/new" aria-label="Shop New Arrivals">
+          <img src="https://images.unsplash.com/photo-1520975825333-72b288f3e8e0?w=1200&q=80&auto=format&fit=crop" alt="New arrivals"/>
+          <span>New</span>
+        </a>
+        <a class="tile" href="#/clearance" aria-label="Shop Clearance">
+          <img src="https://images.unsplash.com/photo-1544025162-d76694265947?w=1200&q=80&auto=format&fit=crop" alt="Clearance"/>
+          <span>Clearance</span>
+        </a>
+      </div>
+    </section>
+
+    <section class="usps">
+      <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px">
+        <div class="card" style="padding:12px"><strong>Free returns</strong><p class="muted">30-day hassle-free.</p></div>
+        <div class="card" style="padding:12px"><strong>Quality materials</strong><p class="muted">Built to last.</p></div>
+        <div class="card" style="padding:12px"><strong>Secure checkout</strong><p class="muted">Encrypted & private.</p></div>
+        <div class="card" style="padding:12px"><strong>Fast shipping</strong><p class="muted">2-5 business days.</p></div>
+      </div>
+    </section>
+
     <section>
       <h2 style="text-align:center">Featured products</h2>
       <div class="catalogue"><div id="grid" class="grid" role="list" aria-live="polite"></div></div>
