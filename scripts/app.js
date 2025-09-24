@@ -83,11 +83,11 @@ function renderHome(){
       const el = document.createElement('article');
       el.className = 'card';
       const fallback = getFallbackFor(p);
-      const altImage = (p.images[1] && p.images[1] !== p.images[0]) ? p.images[1] : fallback;
+      const hasAlt = Boolean(p.images[1] && p.images[1] !== p.images[0]);
       el.innerHTML = `
         <div class="card-media">
           <img class="primary" src="${p.images[0]}" alt="${p.title}" loading="lazy" referrerpolicy="no-referrer" onerror="this.onerror=null;this.src='${fallback}'" />
-          <img class="alt" src="${altImage}" alt="${p.title} alternate" loading="lazy" referrerpolicy="no-referrer" onerror="this.onerror=null;this.src='${fallback}'" />
+          ${hasAlt ? `<img class="alt" src="${p.images[1]}" alt="${p.title} alternate" loading="lazy" referrerpolicy="no-referrer" onerror="this.style.display='none'">` : ''}
           <div class="card-overlay">
             <div class="row" style="gap:8px">
               <a class="btn btn-ghost" href="#/product/${p.id}">Quick View</a>
@@ -357,12 +357,12 @@ function renderCollection({ gender, isNew, title }){
   const $grid = document.getElementById('grid');
   $grid.innerHTML = filtered.map(p => {
     const fallback = getFallbackFor(p);
-    const altImage = (p.images[1] && p.images[1] !== p.images[0]) ? p.images[1] : fallback;
+    const hasAlt = Boolean(p.images[1] && p.images[1] !== p.images[0]);
     return `
     <article class="card">
       <div class="card-media">
         <img class="primary" src="${p.images[0]}" alt="${p.title}" loading="lazy" referrerpolicy="no-referrer" onerror="this.onerror=null;this.src='${fallback}'" />
-        <img class="alt" src="${altImage}" alt="${p.title} alternate" loading="lazy" referrerpolicy="no-referrer" onerror="this.onerror=null;this.src='${fallback}'" />
+        ${hasAlt ? `<img class=\"alt\" src=\"${p.images[1]}\" alt=\"${p.title} alternate\" loading=\"lazy\" referrerpolicy=\"no-referrer\" onerror=\"this.style.display='none'\">` : ''}
         <div class="card-overlay">
           <div class="row" style="gap:8px">
             <a class="btn btn-ghost" href="#/product/${p.id}">Quick View</a>
