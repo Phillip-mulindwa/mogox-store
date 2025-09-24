@@ -77,19 +77,19 @@ function renderHome(){
     <section class="tiles">
       <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px">
         <a class="tile" href="#/women" aria-label="Shop Women">
-          <img src="${buildCardUrl((PRODUCTS.find(p=>p.gender==='women')||PRODUCTS[0]).images[0])}" alt="Women collection"/>
+          <img src="${buildCardUrl((RESOLVED_PRODUCTS.find(p=>p.gender==='women')||RESOLVED_PRODUCTS[0]).images[0])}" alt="Women collection"/>
           <span>Women</span>
         </a>
         <a class="tile" href="#/men" aria-label="Shop Men">
-          <img src="${buildCardUrl((PRODUCTS.find(p=>p.gender==='men')||PRODUCTS[0]).images[0])}" alt="Men collection"/>
+          <img src="${buildCardUrl((RESOLVED_PRODUCTS.find(p=>p.gender==='men')||RESOLVED_PRODUCTS[0]).images[0])}" alt="Men collection"/>
           <span>Men</span>
         </a>
         <a class="tile" href="#/new" aria-label="Shop New Arrivals">
-          <img src="${buildCardUrl((PRODUCTS.find(p=>p.isNew) || PRODUCTS[0]).images[0])}" alt="New arrivals"/>
+          <img src="${buildCardUrl((RESOLVED_PRODUCTS.find(p=>p.isNew) || RESOLVED_PRODUCTS[0]).images[0])}" alt="New arrivals"/>
           <span>New</span>
         </a>
         <a class="tile" href="#/clearance" aria-label="Shop Clearance">
-          <img src="${buildCardUrl((PRODUCTS.find(p=>p.clearance) || PRODUCTS[0]).images[0])}" alt="Clearance"/>
+          <img src="${buildCardUrl((RESOLVED_PRODUCTS.find(p=>p.clearance) || RESOLVED_PRODUCTS[0]).images[0])}" alt="Clearance"/>
           <span>Clearance</span>
         </a>
       </div>
