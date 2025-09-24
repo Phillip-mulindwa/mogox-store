@@ -1,7 +1,7 @@
 import { PRODUCTS } from './products.js';
-import { getProductsWithResolvedImages } from './apply-images.js';
 import * as STORE from './storage.js';
 import { buildCardUrl, buildThumbUrl, buildVideoUrl } from './cloudinary.js';
+import { getProductsWithResolvedImages } from './apply-images.js';
 
 const $app = document.getElementById('app');
 const $navCart = document.getElementById('nav-cart');
@@ -10,6 +10,9 @@ const $miniCartWrap = document.querySelector('[data-minicart]');
 const $dropdown = document.querySelector('[data-dropdown]');
 const YEAR = document.getElementById('year');
 YEAR.textContent = new Date().getFullYear();
+
+// Global cache for resolved products (replaces URLs at runtime)
+let RESOLVED_PRODUCTS = PRODUCTS.slice();
 
 function formatCurrency(v){ return '€' + Number(v).toFixed(2); }
 
@@ -140,21 +143,13 @@ function renderHome(){
   }
 
   let activeFilter = 'all';
-  let list = PRODUCTS.slice();
+  let list = RESOLVED_PRODUCTS.slice();
   show(list);
-  // apply async resolved images (Unsplash via data/images.json)
-  getProductsWithResolvedImages().then(resolved => {
-    list = resolved.slice();
-    const base = filterList(list, activeFilter);
-    const q = $search.value.trim().toLowerCase();
-    show(q ? base.filter(p => p.title.toLowerCase().includes(q)) : base);
-  });
 
   $grid.addEventListener('click', (e)=>{
     const id = e.target.closest('[data-add]')?.getAttribute('data-add');
     if(id){
-      const prod = PRODUCTS.find(p => p.id === id);
-      // default size to first
+      const prod = RESOLVED_PRODUCTS.find(p => p.id === id);
       STORE.addToCart({ productId: prod.id, title: prod.title, price: prod.price, size: prod.sizes[0] || 'One size', qty: 1, image: prod.images[0] });
       updateCartCount();
       alert('Added to cart: ' + prod.title);
@@ -163,7 +158,7 @@ function renderHome(){
 
   $search.addEventListener('input', (e)=> {
     const q = e.target.value.trim().toLowerCase();
-    const base = filterList(PRODUCTS, activeFilter);
+    const base = filterList(RESOLVED_PRODUCTS, activeFilter);
     show(base.filter(p => p.title.toLowerCase().includes(q)));
   });
   // filter buttons
@@ -173,7 +168,7 @@ function renderHome(){
       btn.setAttribute('aria-pressed','true');
       activeFilter = btn.getAttribute('data-filter');
       const q = $search.value.trim().toLowerCase();
-      const base = filterList(PRODUCTS, activeFilter);
+      const base = filterList(RESOLVED_PRODUCTS, activeFilter);
       show(q ? base.filter(p=> p.title.toLowerCase().includes(q)) : base);
     });
   });
@@ -191,10 +186,9 @@ function filterList(products, filter){
 
 // ---------- RENDER: PRODUCT ----------
 function renderProduct(id){
-  const baseProduct = PRODUCTS.find(p => p.id === id);
+  const baseProduct = RESOLVED_PRODUCTS.find(p => p.id === id);
   if(!baseProduct){ location.hash = '#/'; return; }
   const product = baseProduct;
-  if(!product){ location.hash = '#/'; return; }
   document.title = product.title + ' — Mogox';
   const fallback = getFallbackFor(product);
   const gallery = Array.from(new Set([product.images[0], product.images[1], fallback].filter(Boolean)));
@@ -257,7 +251,7 @@ function renderProduct(id){
   });
 
   // render related
-  const related = PRODUCTS.filter(p => p.id !== product.id && p.category === product.category && p.gender === product.gender).slice(0, 4);
+  const related = RESOLVED_PRODUCTS.filter(p => p.id !== product.id && p.category === product.category && p.gender === product.gender).slice(0, 4);
   const $rg = document.getElementById('related-grid');
   $rg.innerHTML = related.map(r => `
     <article class="card">
@@ -412,7 +406,7 @@ function renderCheckout(){
 // ---------- RENDER: COLLECTION ROUTES ----------
 function renderCollection({ gender, isNew, title }){
   document.title = title + ' — Mogox';
-  const filtered = PRODUCTS.filter(p =>
+  const filtered = RESOLVED_PRODUCTS.filter(p =>
     (gender ? p.gender === gender : true) &&
     (isNew ? p.isNew : true) &&
     (title === 'Clearance' ? p.clearance : true)
@@ -456,7 +450,7 @@ function renderCollection({ gender, isNew, title }){
   $grid.addEventListener('click', (e)=>{
     const id = e.target.closest('[data-add]')?.getAttribute('data-add');
     if(id){
-      const prod = PRODUCTS.find(p => p.id === id);
+      const prod = RESOLVED_PRODUCTS.find(p => p.id === id);
       STORE.addToCart({ productId: prod.id, title: prod.title, price: prod.price, size: prod.sizes[0] || 'One size', qty: 1, image: prod.images[0] });
       updateCartCount();
       alert('Added to cart: ' + prod.title);
@@ -569,6 +563,11 @@ window.addEventListener('hashchange', router);
 window.addEventListener('load', ()=>{
   updateCartCount();
   router();
+  // hydrate resolved products (then re-render route)
+  getProductsWithResolvedImages().then(list => {
+    RESOLVED_PRODUCTS = list.slice();
+    router();
+  });
   // Dropdown (Shop)
   if($dropdown){
     const trigger = $dropdown.querySelector('.dropdown-trigger');
@@ -590,13 +589,11 @@ window.addEventListener('load', ()=>{
       if(!$dropdown.contains(e.target)) close();
     });
   }
-
   // Mini cart
   if($miniCartWrap){
     function openMini(){ $miniCartWrap.classList.add('open'); $navCart.setAttribute('aria-expanded','true'); }
     function closeMini(){ $miniCartWrap.classList.remove('open'); $navCart.setAttribute('aria-expanded','false'); }
     $navCart.addEventListener('click', (e)=>{
-      // toggle mini cart without navigating away immediately
       const href = $navCart.getAttribute('href');
       if(href === '#/cart'){
         e.preventDefault();
