@@ -1,4 +1,5 @@
 import { PRODUCTS } from './products.js';
+import { buildCardUrl, buildThumbUrl } from './cloudinary.js';
 import * as STORE from './storage.js';
 
 const $app = document.getElementById('app');
@@ -116,8 +117,8 @@ function renderHome(){
       const hasAlt = Boolean(p.images[1] && p.images[1] !== p.images[0]);
       el.innerHTML = `
         <div class="card-media">
-          <img class="primary" src="${p.images[0]}" alt="${p.title}" loading="lazy" referrerpolicy="no-referrer" onerror="this.onerror=null;this.src='${fallback}'" />
-          ${hasAlt ? `<img class="alt" src="${p.images[1]}" alt="${p.title} alternate" loading="lazy" referrerpolicy="no-referrer" onerror="this.style.display='none'">` : ''}
+          <img class="primary" src="${buildCardUrl(p.images[0])}" alt="${p.title}" loading="lazy" referrerpolicy="no-referrer" onerror="this.onerror=null;this.src='${fallback}'" />
+          ${hasAlt ? `<img class=\"alt\" src=\"${buildCardUrl(p.images[1])}\" alt=\"${p.title} alternate\" loading=\"lazy\" referrerpolicy=\"no-referrer\" onerror=\"this.style.display='none'\">` : ''}
           <div class="card-overlay">
             <div class="row" style="gap:8px">
               <a class="btn btn-ghost" href="#/product/${p.id}">Quick View</a>
@@ -192,10 +193,10 @@ function renderProduct(id){
     <div class="product-grid">
       <div>
         <div id="main-image" style="border-radius:10px;overflow:hidden">
-          <img src="${product.images[0]}" alt="${product.title}" style="width:100%;height:420px;object-fit:cover" referrerpolicy="no-referrer" onerror="this.onerror=null;this.src='${fallback}'" />
+          <img src="${buildCardUrl(product.images[0])}" alt="${product.title}" style="width:100%;height:420px;object-fit:cover" referrerpolicy="no-referrer" onerror="this.onerror=null;this.src='${fallback}'" />
         </div>
         <div style="display:flex;gap:8px;margin-top:8px">
-          ${gallery.map((img, i)=> `<button class="thumb" data-i="${i}" style="border:1px solid #eee;padding:4px;border-radius:8px"><img src="${img}" alt="${product.title} thumb ${i+1}" style="width:64px;height:64px;object-fit:cover;border-radius:6px" referrerpolicy="no-referrer" onerror="this.onerror=null;this.src='${fallback}'"></button>`).join('')}
+          ${gallery.map((img, i)=> `<button class=\"thumb\" data-i=\"${i}\" style=\"border:1px solid #eee;padding:4px;border-radius:8px\"><img src=\"${buildThumbUrl(img)}\" alt=\"${product.title} thumb ${i+1}\" style=\"width:64px;height:64px;object-fit:cover;border-radius:6px\" referrerpolicy=\"no-referrer\" onerror=\"this.onerror=null;this.src='${fallback}'\"></button>`).join('')}
         </div>
       </div>
 
@@ -391,8 +392,8 @@ function renderCollection({ gender, isNew, title }){
     return `
     <article class="card">
       <div class="card-media">
-        <img class="primary" src="${p.images[0]}" alt="${p.title}" loading="lazy" referrerpolicy="no-referrer" onerror="this.onerror=null;this.src='${fallback}'" />
-        ${hasAlt ? `<img class=\"alt\" src=\"${p.images[1]}\" alt=\"${p.title} alternate\" loading=\"lazy\" referrerpolicy=\"no-referrer\" onerror=\"this.style.display='none'\">` : ''}
+        <img class="primary" src="${buildCardUrl(p.images[0])}" alt="${p.title}" loading="lazy" referrerpolicy="no-referrer" onerror="this.onerror=null;this.src='${fallback}'" />
+        ${hasAlt ? `<img class=\"alt\" src=\"${buildCardUrl(p.images[1])}\" alt=\"${p.title} alternate\" loading=\"lazy\" referrerpolicy=\"no-referrer\" onerror=\"this.style.display='none'\">` : ''}
         <div class="card-overlay">
           <div class="row" style="gap:8px">
             <a class="btn btn-ghost" href="#/product/${p.id}">Quick View</a>
