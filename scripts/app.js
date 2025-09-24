@@ -92,6 +92,23 @@ function renderHome(){
           <img src="${buildCardUrl((RESOLVED_PRODUCTS.find(p=>p.clearance) || RESOLVED_PRODUCTS[0]).images[0])}" alt="Clearance"/>
           <span>Clearance</span>
         </a>
+        <!-- duplicate for marquee looping -->
+        <a class="tile" href="#/women" aria-label="Shop Women">
+          <img src="${buildCardUrl((RESOLVED_PRODUCTS.find(p=>p.gender==='women')||RESOLVED_PRODUCTS[0]).images[0])}" alt="Women collection"/>
+          <span>Women</span>
+        </a>
+        <a class="tile" href="#/men" aria-label="Shop Men">
+          <img src="${buildCardUrl((RESOLVED_PRODUCTS.find(p=>p.gender==='men')||RESOLVED_PRODUCTS[0]).images[0])}" alt="Men collection"/>
+          <span>Men</span>
+        </a>
+        <a class="tile" href="#/new" aria-label="Shop New Arrivals">
+          <img src="${buildCardUrl((RESOLVED_PRODUCTS.find(p=>p.isNew) || RESOLVED_PRODUCTS[0]).images[0])}" alt="New arrivals"/>
+          <span>New</span>
+        </a>
+        <a class="tile" href="#/clearance" aria-label="Shop Clearance">
+          <img src="${buildCardUrl((RESOLVED_PRODUCTS.find(p=>p.clearance) || RESOLVED_PRODUCTS[0]).images[0])}" alt="Clearance"/>
+          <span>Clearance</span>
+        </a>
       </div>
     </section>
 
@@ -492,7 +509,19 @@ function renderAbout(){
         <iframe title="Mogox Berlin Location" width="100%" height="320" style="border:0" loading="lazy" referrerpolicy="no-referrer-when-downgrade" src="https://www.google.com/maps?q=Berlin%20Germany&output=embed"></iframe>
       </div>
     </div>
+
+    <div id="about-popup" style="position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.45);z-index:1000">
+      <div style="background:#fff;border-radius:14px;padding:18px;max-width:420px;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,0.25)">
+        <h3 style="margin:6px 0">Welcome to Mogox 🎉</h3>
+        <p class="muted" style="margin:0 0 10px 0">Enjoy 10% off your first order with code <strong>MOGOX10</strong></p>
+        <button id="close-popup" class="btn btn-primary">Nice!</button>
+      </div>
+    </div>
   `;
+  const pop = document.getElementById('about-popup');
+  const close = document.getElementById('close-popup');
+  if(close){ close.addEventListener('click', ()=> pop.remove()); }
+  setTimeout(()=>{ if(pop){ pop.style.opacity = '0'; pop.style.transition = 'opacity .25s ease'; setTimeout(()=>pop.remove(), 260); } }, 6000);
   $app.focus();
 }
 

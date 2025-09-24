@@ -67,6 +67,18 @@ a{color:inherit}
 .tile span{position:absolute;left:10px;bottom:10px;background:rgba(0,0,0,.6);color:#fff;padding:6px 10px;border-radius:999px;font-weight:600}
 .tile:hover img{transform:scale(1.03);filter:saturate(1.05)}
 
+/* Floating marquee for tiles */
+.tiles .grid{position:relative;overflow:hidden}
+.tiles .grid::before,.tiles .grid::after{content:'';position:absolute;top:0;bottom:0;width:40px;z-index:1}
+.tiles .grid::before{left:0;background:linear-gradient(90deg,#f7fafc,rgba(247,250,252,0))}
+.tiles .grid::after{right:0;background:linear-gradient(270deg,#f7fafc,rgba(247,250,252,0))}
+.tiles .grid{white-space:nowrap}
+.tiles .tile{display:inline-block;width:260px;margin-right:12px;animation:tile-float 18s linear infinite}
+.tiles .tile:nth-child(2){animation-duration:20s}
+.tiles .tile:nth-child(3){animation-duration:22s}
+.tiles .tile:nth-child(4){animation-duration:24s}
+@keyframes tile-float{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+
 /* USPs */
 .usps{margin:6px 0 18px}
 
