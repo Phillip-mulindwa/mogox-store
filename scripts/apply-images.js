@@ -16,9 +16,9 @@ export async function getProductsWithResolvedImages(){
     const autoMap = await fetchJson('data/images.json');
     if(!manual && !autoMap) return PRODUCTS;
     return PRODUCTS.map(p => {
-      const m = manual && manual[p.id];
       const a = autoMap && autoMap[p.id];
-      const imgs = (m && m.length ? m : (a && a.length ? a : p.images)) || p.images;
+      const m = manual && manual[p.id];
+      const imgs = (a && a.length ? a : (m && m.length ? m : p.images)) || p.images;
       return { ...p, images: imgs };
     });
   } catch (e) {
