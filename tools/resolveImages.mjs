@@ -26,7 +26,15 @@ const CATEGORY_HINTS = {
   accessories: ['beanie', 'hat', 'belt', 'sunglasses', 'socks']
 };
 
-const NEGATIVE_TERMS = ['food', 'pizza', 'burger', 'landscape', 'mountain', 'beach', 'car', 'computer'];
+const NEGATIVE_TERMS = ['food', 'pizza', 'burger', 'landscape', 'mountain', 'beach', 'car', 'computer', 'bitcoin', 'crypto', 'blockchain', 'money', 'coin'];
+
+const REQUIRED_BY_ID = {
+  '10': ['sunglass'],
+  '5': ['shorts'],
+  '12': ['cargo'],
+  '19': ['linen','shirt'],
+  '17': ['chelsea','boot']
+};
 
 async function loadProducts(){
   const raw = await fs.readFile(PRODUCTS_FILE, 'utf8');
@@ -55,12 +63,18 @@ function buildQuery(p, custom){
   return terms.join(' ');
 }
 
-function goodResult(r){
+function goodResult(r, requiredTerms){
   const text = `${r.description || ''} ${r.alt_description || ''}`.toLowerCase();
   if(NEGATIVE_TERMS.some(bad => text.includes(bad))) return false;
-  // Prefer apparel-like subjects
   const ok = /shirt|jacket|coat|jeans|pants|shorts|skirt|dress|sneaker|boot|sandal|beanie|hat|belt|sunglass|sock|apparel|clothing/;
-  return ok.test(text) || (r.tags || []).some(t => ok.test((t.title||'').toLowerCase()));
+  const tagMatch = (r.tags || []).some(t => ok.test((t.title||'').toLowerCase()));
+  const baseOk = ok.test(text) || tagMatch;
+  if(!requiredTerms || requiredTerms.length === 0) return baseOk;
+  const hasRequired = requiredTerms.every(term => {
+    const re = new RegExp(term, 'i');
+    return re.test(text) || (r.tags||[]).some(t => re.test(t.title||''));
+  });
+  return baseOk && hasRequired;
 }
 
 async function searchUnsplash(q){
@@ -81,15 +95,13 @@ async function searchUnsplash(q){
 async function resolveForProduct(p, custom){
   const q = buildQuery(p, custom);
   const results = await searchUnsplash(q);
-  const filtered = results.filter(goodResult);
-  const pick = (filtered.length ? filtered : results).slice(0, 4);
-  // map to raw URLs; Cloudinary will transform
+  const required = REQUIRED_BY_ID[p.id] || [];
+  const filtered = results.filter(r => goodResult(r, required));
+  const pick = (filtered.length ? filtered : results).slice(0, 6);
   const urls = pick.map(r => r.urls && (r.urls.raw || r.urls.full || r.urls.regular)).filter(Boolean);
-  // ensure at least one
   if(urls.length === 0){
     return null;
   }
-  // return top two unique
   const unique = Array.from(new Set(urls));
   return unique.slice(0, 2);
 }
@@ -109,7 +121,7 @@ async function main(){
       } else {
         console.warn(`! No images for ${p.id} ${p.title}`);
       }
-      await wait(220); // small delay to be polite
+      await wait(220);
     } catch (e) {
       console.warn(`! Error for ${p.id} ${p.title}:`, e.message);
     }
