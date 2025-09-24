@@ -77,47 +77,21 @@ function renderHome(){
     <section class="tiles">
       <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px">
         <a class="tile" href="#/women" aria-label="Shop Women">
-          <img src="${buildCardUrl((RESOLVED_PRODUCTS.find(p=>p.gender==='women')||RESOLVED_PRODUCTS[0]).images[0])}" alt="Women collection"/>
+          <img src="${buildCardUrl((PRODUCTS.find(p=>p.gender==='women')||PRODUCTS[0]).images[0])}" alt="Women collection"/>
           <span>Women</span>
         </a>
         <a class="tile" href="#/men" aria-label="Shop Men">
-          <img src="${buildCardUrl((RESOLVED_PRODUCTS.find(p=>p.gender==='men')||RESOLVED_PRODUCTS[0]).images[0])}" alt="Men collection"/>
+          <img src="${buildCardUrl((PRODUCTS.find(p=>p.gender==='men')||PRODUCTS[0]).images[0])}" alt="Men collection"/>
           <span>Men</span>
         </a>
         <a class="tile" href="#/new" aria-label="Shop New Arrivals">
-          <img src="${buildCardUrl((RESOLVED_PRODUCTS.find(p=>p.isNew) || RESOLVED_PRODUCTS[0]).images[0])}" alt="New arrivals"/>
+          <img src="${buildCardUrl((PRODUCTS.find(p=>p.isNew) || PRODUCTS[0]).images[0])}" alt="New arrivals"/>
           <span>New</span>
         </a>
         <a class="tile" href="#/clearance" aria-label="Shop Clearance">
-          <img src="${buildCardUrl((RESOLVED_PRODUCTS.find(p=>p.clearance) || RESOLVED_PRODUCTS[0]).images[0])}" alt="Clearance"/>
+          <img src="${buildCardUrl((PRODUCTS.find(p=>p.clearance) || PRODUCTS[0]).images[0])}" alt="Clearance"/>
           <span>Clearance</span>
         </a>
-        <!-- duplicate for marquee looping -->
-        <a class="tile" href="#/women" aria-label="Shop Women">
-          <img src="${buildCardUrl((RESOLVED_PRODUCTS.find(p=>p.gender==='women')||RESOLVED_PRODUCTS[0]).images[0])}" alt="Women collection"/>
-          <span>Women</span>
-        </a>
-        <a class="tile" href="#/men" aria-label="Shop Men">
-          <img src="${buildCardUrl((RESOLVED_PRODUCTS.find(p=>p.gender==='men')||RESOLVED_PRODUCTS[0]).images[0])}" alt="Men collection"/>
-          <span>Men</span>
-        </a>
-        <a class="tile" href="#/new" aria-label="Shop New Arrivals">
-          <img src="${buildCardUrl((RESOLVED_PRODUCTS.find(p=>p.isNew) || RESOLVED_PRODUCTS[0]).images[0])}" alt="New arrivals"/>
-          <span>New</span>
-        </a>
-        <a class="tile" href="#/clearance" aria-label="Shop Clearance">
-          <img src="${buildCardUrl((RESOLVED_PRODUCTS.find(p=>p.clearance) || RESOLVED_PRODUCTS[0]).images[0])}" alt="Clearance"/>
-          <span>Clearance</span>
-        </a>
-      </div>
-    </section>
-
-    <section class="usps">
-      <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px">
-        <div class="card" style="padding:12px"><strong>Free returns</strong><p class="muted">30-day hassle-free.</p></div>
-        <div class="card" style="padding:12px"><strong>Quality materials</strong><p class="muted">Built to last.</p></div>
-        <div class="card" style="padding:12px"><strong>Secure checkout</strong><p class="muted">Encrypted & private.</p></div>
-        <div class="card" style="padding:12px"><strong>Fast shipping</strong><p class="muted">2-5 business days.</p></div>
       </div>
     </section>
 
@@ -160,13 +134,13 @@ function renderHome(){
   }
 
   let activeFilter = 'all';
-  let list = RESOLVED_PRODUCTS.slice();
+  let list = PRODUCTS.slice();
   show(list);
 
   $grid.addEventListener('click', (e)=>{
     const id = e.target.closest('[data-add]')?.getAttribute('data-add');
     if(id){
-      const prod = RESOLVED_PRODUCTS.find(p => p.id === id);
+      const prod = PRODUCTS.find(p => p.id === id);
       STORE.addToCart({ productId: prod.id, title: prod.title, price: prod.price, size: prod.sizes[0] || 'One size', qty: 1, image: prod.images[0] });
       updateCartCount();
       alert('Added to cart: ' + prod.title);
@@ -175,17 +149,16 @@ function renderHome(){
 
   $search.addEventListener('input', (e)=> {
     const q = e.target.value.trim().toLowerCase();
-    const base = filterList(RESOLVED_PRODUCTS, activeFilter);
+    const base = filterList(PRODUCTS, activeFilter);
     show(base.filter(p => p.title.toLowerCase().includes(q)));
   });
-  // filter buttons
   document.querySelectorAll('.pill').forEach(btn => {
     btn.addEventListener('click', ()=>{
       document.querySelectorAll('.pill').forEach(b=> b.setAttribute('aria-pressed','false'));
       btn.setAttribute('aria-pressed','true');
       activeFilter = btn.getAttribute('data-filter');
       const q = $search.value.trim().toLowerCase();
-      const base = filterList(RESOLVED_PRODUCTS, activeFilter);
+      const base = filterList(PRODUCTS, activeFilter);
       show(q ? base.filter(p=> p.title.toLowerCase().includes(q)) : base);
     });
   });
@@ -480,9 +453,10 @@ function renderCollection({ gender, isNew, title }){
 function renderAbout(){
   document.title = 'About — Mogox';
   $app.innerHTML = `
-    <section class="hero" aria-labelledby="about-title">
-      <h1 id="about-title">About Mogox</h1>
-      <p>Born from a love of design and comfort. We craft pieces that last.</p>
+    <section class="hero" aria-labelledby="about-title" style="position:relative;overflow:hidden">
+      <img src="${buildCardUrl('https://images.unsplash.com/photo-1520974735194-9759a5a0bd05?w=1200&q=70&auto=format&fit=crop')}" alt="" aria-hidden="true" style="position:absolute;inset:0;opacity:.06;filter:grayscale(100%);object-fit:cover;pointer-events:none" />
+      <h1 id="about-title" style="position:relative">About Mogox</h1>
+      <p style="position:relative">Born from a love of design and comfort. We craft pieces that last.</p>
     </section>
     <div style="max-width:760px;margin:0 auto;text-align:center;background:#fff;padding:20px;border-radius:12px;box-shadow:0 8px 20px rgba(0,0,0,0.05)">
       <h2 style="margin-top:0">Our Mission</h2>
@@ -592,11 +566,13 @@ window.addEventListener('hashchange', router);
 window.addEventListener('load', ()=>{
   updateCartCount();
   router();
-  // hydrate resolved products (then re-render route)
-  getProductsWithResolvedImages().then(list => {
-    RESOLVED_PRODUCTS = list.slice();
-    router();
-  });
+  // hydrate resolved products only if enabled
+  if(window.MOGOX_USE_RESOLVED){
+    getProductsWithResolvedImages().then(list => {
+      RESOLVED_PRODUCTS = list.slice();
+      router();
+    });
+  }
   // Dropdown (Shop)
   if($dropdown){
     const trigger = $dropdown.querySelector('.dropdown-trigger');

@@ -73,11 +73,8 @@ a{color:inherit}
 .tiles .grid::before{left:0;background:linear-gradient(90deg,#f7fafc,rgba(247,250,252,0))}
 .tiles .grid::after{right:0;background:linear-gradient(270deg,#f7fafc,rgba(247,250,252,0))}
 .tiles .grid{white-space:nowrap}
-.tiles .tile{display:inline-block;width:260px;margin-right:12px;animation:tile-float 18s linear infinite}
-.tiles .tile:nth-child(2){animation-duration:20s}
-.tiles .tile:nth-child(3){animation-duration:22s}
-.tiles .tile:nth-child(4){animation-duration:24s}
-@keyframes tile-float{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+.tiles .tile{display:inline-block;width:260px;margin-right:12px;animation:tile-slide 14s linear infinite}
+@keyframes tile-slide{0%{transform:translateX(0)}100%{transform:translateX(-100%)}}
 
 /* USPs */
 .usps{margin:6px 0 18px}
