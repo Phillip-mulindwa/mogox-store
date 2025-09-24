@@ -1,4 +1,5 @@
 export const PRODUCTS = [
+
   { id: '1', title: 'Classic Tee', price: 19.99, category: 'tops', gender: 'men', isNew: true, images: ['https://images.unsplash.com/photo-1520974735194-9759a5a0bd05?w=1200&q=80&auto=format&fit=crop','https://images.unsplash.com/photo-1520974527058-74d1c80c2d92?w=1200&q=80&auto=format&fit=crop'], sizes: ['S','M','L','XL'], description: 'Soft cotton tee for everyday comfort.' },
   { id: '2', title: 'Denim Jacket', price: 69.99, category: 'outerwear', gender: 'men', isNew: false, images: ['https://images.unsplash.com/photo-1620799139504-8a50f19495c1?w=1200&q=80&auto=format&fit=crop','https://images.unsplash.com/photo-1551537482-f2075a1d41f2?w=1200&q=80&auto=format&fit=crop'], sizes: ['M','L','XL'], description: 'Timeless denim with modern fit.' },
   { id: '3', title: 'Slim Fit Jeans', price: 49.99, category: 'bottoms', gender: 'men', isNew: false, images: ['https://images.unsplash.com/photo-1514996937319-344454492b37?w=1200&q=80&auto=format&fit=crop','https://images.unsplash.com/photo-1517777170473-5c8e0b819b53?w=1200&q=80&auto=format&fit=crop'], sizes: ['30','32','34','36'], description: 'Stretch denim for everyday movement.' },
@@ -20,4 +21,5 @@ export const PRODUCTS = [
   { id: '18', title: 'Sport Socks (3-Pack)', price: 12.99, category: 'accessories', gender: 'unisex', isNew: false, images: ['https://images.unsplash.com/photo-1593032457861-693f24baf67b?w=1200&q=80&auto=format&fit=crop'], sizes: ['One size'], description: 'Breathable cushioned socks.' },
   { id: '19', title: 'Linen Blend Shirt', price: 39.99, category: 'tops', gender: 'men', isNew: true, images: ['https://images.unsplash.com/photo-1512436991641-6745cdb1723f?w=1200&q=80&auto=format&fit=crop','https://images.unsplash.com/photo-1520975657289-6c7881a6b361?w=1200&q=80&auto=format&fit=crop'], sizes: ['S','M','L','XL'], description: 'Cool, airy linen blend.' },
   { id: '20', title: 'Summer Sandals', price: 19.99, compareAt: 39.99, clearance: true, category: 'shoes', gender: 'women', isNew: false, images: ['https://images.unsplash.com/photo-1540660241899-08dd1b5f13b2?w=1200&q=80&auto=format&fit=crop'], sizes: ['6','7','8','9'], description: 'Comfortable strappy sandals.' }
-];
+
+  ];
