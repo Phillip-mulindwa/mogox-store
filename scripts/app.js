@@ -222,6 +222,11 @@ function renderProduct(id){
         </div>
       </div>
     </div>
+
+    <section style="margin-top:16px">
+      <h2 style="margin:10px 0">Related products</h2>
+      <div class="catalogue"><div id="related-grid" class="grid"></div></div>
+    </section>
   `;
 
   // thumbs behavior (image/video)
@@ -240,6 +245,26 @@ function renderProduct(id){
       container.innerHTML = `<video src="${src}" style="width:100%;height:420px;object-fit:cover;border-radius:6px" controls autoplay muted playsinline></video>`;
     }
   });
+
+  // render related
+  const related = PRODUCTS.filter(p => p.id !== product.id && p.category === product.category && p.gender === product.gender).slice(0, 4);
+  const $rg = document.getElementById('related-grid');
+  $rg.innerHTML = related.map(r => `
+    <article class="card">
+      <div class="card-media">
+        <img class="primary" src="${buildCardUrl(r.images[0])}" alt="${r.title}" loading="lazy" />
+      </div>
+      <div class="card-body">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <h3 style="margin:0;font-size:1rem">${r.title}</h3>
+          <div class="price">${formatCurrency(r.price)}</div>
+        </div>
+        <div class="row" style="justify-content:center;margin-top:6px">
+          <a class="btn btn-ghost" href="#/product/${r.id}">View</a>
+        </div>
+      </div>
+    </article>
+  `).join('');
 
   document.getElementById('add-cart').addEventListener('click', ()=>{
     const size = document.getElementById('size-select').value || (product.sizes[0] || 'One size');
