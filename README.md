@@ -1,14 +1,15 @@
-Mogox Clothing Store — Option A (HTML/CSS/JS)
+Mogox Clothing Store — I used the following stacks for its functionality (HTML/CSS/JS)
 
-Overview
+#Overview
 This is a fully client-side demo store implementing the required features using plain HTML, CSS, and vanilla JS with modules. It includes product listing and filters, product detail, cart with localStorage persistence, checkout simulation, responsive design, basic accessibility, and a live deployment config.
 
 Tech Stack
 - HTML/CSS/vanilla JS modules
-- Netlify (or GitHub Pages) for deploy
+- Netlify  for deploying:  
+ :https://deploy-preview-1--mogox.netlify.app/#/ (link to the demo)
 - http-server for local dev
 
-Getting Started
+#Getting Started
 1. npm install
 2. npm start
 3. Open http://localhost:5173
