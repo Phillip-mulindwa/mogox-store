@@ -11,6 +11,20 @@ YEAR.textContent = new Date().getFullYear();
 
 function formatCurrency(v){ return '€' + Number(v).toFixed(2); }
 
+// Image fallbacks by category to ensure reliable, relevant visuals
+const FALLBACKS = Object.freeze({
+  tops: 'https://images.unsplash.com/photo-1520974735194-9759a5a0bd05?w=1200&q=80&auto=format&fit=crop',
+  outerwear: 'https://images.unsplash.com/photo-1620799139504-8a50f19495c1?w=1200&q=80&auto=format&fit=crop',
+  bottoms: 'https://images.unsplash.com/photo-1514996937319-344454492b37?w=1200&q=80&auto=format&fit=crop',
+  dresses: 'https://images.unsplash.com/photo-1520975825333-72b288f3e8e0?w=1200&q=80&auto=format&fit=crop',
+  shoes: 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=1200&q=80&auto=format&fit=crop',
+  accessories: 'https://images.unsplash.com/photo-1518544801976-3e159e50e5bb?w=1200&q=80&auto=format&fit=crop'
+});
+const GENERIC_FALLBACK = 'https://images.unsplash.com/photo-1520974735194-9759a5a0bd05?w=1200&q=80&auto=format&fit=crop';
+function getFallbackFor(product){
+  return FALLBACKS[product.category] || GENERIC_FALLBACK;
+}
+
 function updateCartCount(){
   const items = STORE.loadCart();
   const count = items.reduce((s,i)=> s + i.qty, 0);
@@ -69,10 +83,11 @@ function renderHome(){
       const el = document.createElement('article');
       el.className = 'card';
       const altImage = p.images[1] || p.images[0];
+      const fallback = getFallbackFor(p);
       el.innerHTML = `
         <div class="card-media">
-          <img class="primary" src="${p.images[0]}" alt="${p.title}" loading="lazy" />
-          <img class="alt" src="${altImage}" alt="${p.title} alternate" loading="lazy" />
+          <img class="primary" src="${p.images[0]}" alt="${p.title}" loading="lazy" referrerpolicy="no-referrer" onerror="this.onerror=null;this.src='${fallback}'" />
+          <img class="alt" src="${altImage}" alt="${p.title} alternate" loading="lazy" referrerpolicy="no-referrer" onerror="this.onerror=null;this.src='${fallback}'" />
           <div class="card-overlay">
             <div class="row" style="gap:8px">
               <a class="btn btn-ghost" href="#/product/${p.id}">Quick View</a>
@@ -141,14 +156,15 @@ function renderProduct(id){
   if(!product){ location.hash = '#/'; return; }
   document.title = product.title + ' — Mogox';
   // thumbnails + main image carousel (simple)
+  const fallback = getFallbackFor(product);
   $app.innerHTML = `
     <div class="product-grid">
       <div>
         <div id="main-image" style="border-radius:10px;overflow:hidden">
-          <img src="${product.images[0]}" alt="${product.title}" style="width:100%;height:420px;object-fit:cover" />
+          <img src="${product.images[0]}" alt="${product.title}" style="width:100%;height:420px;object-fit:cover" referrerpolicy="no-referrer" onerror="this.onerror=null;this.src='${fallback}'" />
         </div>
         <div style="display:flex;gap:8px;margin-top:8px">
-          ${product.images.map((img, i)=> `<button class="thumb" data-i="${i}" style="border:1px solid #eee;padding:4px;border-radius:8px"><img src="${img}" alt="${product.title} thumb ${i+1}" style="width:64px;height:64px;object-fit:cover;border-radius:6px"></button>`).join('')}
+          ${product.images.map((img, i)=> `<button class="thumb" data-i="${i}" style="border:1px solid #eee;padding:4px;border-radius:8px"><img src="${img}" alt="${product.title} thumb ${i+1}" style="width:64px;height:64px;object-fit:cover;border-radius:6px" referrerpolicy="no-referrer" onerror="this.onerror=null;this.src='${fallback}'"></button>`).join('')}
         </div>
       </div>
 
@@ -233,7 +249,7 @@ function renderCart(){
     const $list = document.getElementById('items-list');
     $list.innerHTML = items.map(it => `
       <div style="display:flex;gap:12px;align-items:center;background:#fff;padding:10px;border-radius:8px;margin-bottom:10px">
-        <img src="${it.image}" alt="${it.title}" style="width:80px;height:80px;object-fit:cover;border-radius:6px" />
+        <img src="${it.image}" alt="${it.title}" style="width:80px;height:80px;object-fit:cover;border-radius:6px" referrerpolicy="no-referrer" onerror="this.onerror=null;this.src='${GENERIC_FALLBACK}'" />
         <div style="flex:1">
           <div style="display:flex;justify-content:space-between"><strong>${it.title}</strong><div>${formatCurrency(it.price)}</div></div>
           <div class="muted">Size: ${it.size}</div>
@@ -340,11 +356,12 @@ function renderCollection({ gender, isNew, title }){
   const $grid = document.getElementById('grid');
   $grid.innerHTML = filtered.map(p => {
     const altImage = p.images[1] || p.images[0];
+    const fallback = getFallbackFor(p);
     return `
     <article class="card">
       <div class="card-media">
-        <img class="primary" src="${p.images[0]}" alt="${p.title}" loading="lazy" />
-        <img class="alt" src="${altImage}" alt="${p.title} alternate" loading="lazy" />
+        <img class="primary" src="${p.images[0]}" alt="${p.title}" loading="lazy" referrerpolicy="no-referrer" onerror="this.onerror=null;this.src='${fallback}'" />
+        <img class="alt" src="${altImage}" alt="${p.title} alternate" loading="lazy" referrerpolicy="no-referrer" onerror="this.onerror=null;this.src='${fallback}'" />
         <div class="card-overlay">
           <div class="row" style="gap:8px">
             <a class="btn btn-ghost" href="#/product/${p.id}">Quick View</a>
@@ -567,7 +584,7 @@ function renderMiniCart(items){
     <div id="mini-cart-content">
       ${list.map(it => `
         <div class="item">
-          <img src="${it.image}" alt="${it.title}" />
+          <img src="${it.image}" alt="${it.title}" referrerpolicy="no-referrer" onerror="this.onerror=null;this.src='${GENERIC_FALLBACK}'" />
           <div style="flex:1">
             <div style="display:flex;justify-content:space-between"><strong>${it.title}</strong><span>x${it.qty}</span></div>
             <div class="muted" style="font-size:0.9rem">${formatCurrency(it.price)} • ${it.size}</div>
