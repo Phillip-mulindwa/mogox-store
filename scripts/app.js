@@ -191,7 +191,7 @@ function renderProduct(id){
   const product = baseProduct;
   document.title = product.title + ' — Mogox';
   const fallback = getFallbackFor(product);
-  const gallery = Array.from(new Set([product.images[0], product.images[1], fallback].filter(Boolean)));
+  const gallery = (Array.isArray(product.images) ? product.images : []).filter(Boolean).slice(0,3);
   const videoUrls = Array.isArray(product.videos) ? product.videos : [];
   $app.innerHTML = `
     <div class="product-grid">

@@ -38,7 +38,6 @@ const REQUIRED_BY_ID = {
 
 async function loadProducts(){
   const raw = await fs.readFile(PRODUCTS_FILE, 'utf8');
-  // crude extraction between first '[' and last ']'
   const start = raw.indexOf('[');
   const end = raw.lastIndexOf(']');
   const arrStr = raw.slice(start, end+1);
@@ -82,7 +81,7 @@ async function searchUnsplash(q){
   url.searchParams.set('query', q);
   url.searchParams.set('orientation', 'squarish');
   url.searchParams.set('content_filter', 'high');
-  url.searchParams.set('per_page', '10');
+  url.searchParams.set('per_page', '15');
   const res = await fetch(url.toString(), { headers: { Authorization: `Client-ID ${ACCESS_KEY}` }});
   if(!res.ok){
     const t = await res.text();
@@ -97,13 +96,13 @@ async function resolveForProduct(p, custom){
   const results = await searchUnsplash(q);
   const required = REQUIRED_BY_ID[p.id] || [];
   const filtered = results.filter(r => goodResult(r, required));
-  const pick = (filtered.length ? filtered : results).slice(0, 6);
+  const pick = (filtered.length ? filtered : results).slice(0, 10);
   const urls = pick.map(r => r.urls && (r.urls.raw || r.urls.full || r.urls.regular)).filter(Boolean);
   if(urls.length === 0){
     return null;
   }
   const unique = Array.from(new Set(urls));
-  return unique.slice(0, 2);
+  return unique.slice(0, 3);
 }
 
 async function main(){
